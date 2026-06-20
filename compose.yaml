@@ -1,0 +1,28 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: socdb
+    ports:
+      - "3306:3306"
+
+  backend:
+    build:
+      context: ./app/backend
+    container_name: soc-api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+
+  frontend:
+    build:
+      context: ./app/frontend
+    container_name: soc-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend

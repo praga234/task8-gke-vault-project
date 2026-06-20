@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: soc-api
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: soc-api
+
+  template:
+    metadata:
+      labels:
+        app: soc-api
+
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "backend-role"
+        vault.hashicorp.com/agent-inject-secret-config: "secret/data/backend"
+
+    spec:
+      serviceAccountName: backend-sa
+
+      containers:
+      - name: soc-api
+        image: pragnesh92/soc-alert-api:v2
+
+        ports:
+        - containerPort: 3000
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+        readinessProbe:
+          tcpSocket:
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+        livenessProbe:
+          tcpSocket:
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10

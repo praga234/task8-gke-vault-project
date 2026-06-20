@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SOC Alert Dashboard</title>
+</head>
+<body>
+
+    <h1>SOC Alert Dashboard</h1>
+
+    <h2>Create Alert</h2>
+
+    <div>
+        <label>Alert Name:</label>
+        <input type="text" id="alertName">
+    </div>
+
+    <br>
+
+    <div>
+        <label>Severity:</label>
+        <select id="severity">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+        </select>
+    </div>
+
+    <br>
+
+    <button onclick="createAlert()">
+        Create Alert
+    </button>
+
+    <hr>
+
+    <h2>Alerts</h2>
+
+    <table border="1" id="alertsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Alert Name</th>
+                <th>Severity</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Alert Details</h2>
+
+    <div id="alertDetails">
+        Click an alert to view details
+    </div>
+
+    <script>
+
+        const API_URL = "http://34.57.242.22:3000";
+
+        function loadAlerts() {
+
+            fetch(`${API_URL}/alerts`)
+                .then(response => response.json())
+                .then(data => {
+
+                    const tbody =
+                        document.querySelector('#alertsTable tbody');
+
+                    tbody.innerHTML = '';
+
+                    data.forEach(alert => {
+
+                        const row = document.createElement('tr');
+
+                        row.style.cursor = "pointer";
+
+                        row.onclick = function () {
+                            showAlert(alert);
+                        };
+
+                        row.innerHTML = `
+                            <td>${alert.alert_id}</td>
+                            <td>${alert.alert_name}</td>
+                            <td>${alert.severity}</td>
+                            <td>${alert.status}</td>
+                        `;
+
+                        tbody.appendChild(row);
+                    });
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        function createAlert() {
+
+            const alertName =
+                document.getElementById("alertName").value;
+
+            const severity =
+                document.getElementById("severity").value;
+
+            if (!alertName) {
+                alert("Please enter Alert Name");
+                return;
+            }
+
+            fetch(`${API_URL}/alerts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    alert_name: alertName,
+                    severity: severity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                document.getElementById("alertName").value = '';
+
+                loadAlerts();
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Failed to create alert");
+            });
+        }
+
+        function showAlert(alert) {
+
+            document.getElementById("alertDetails").innerHTML = `
+                <b>Alert ID:</b> ${alert.alert_id}<br><br>
+                <b>Alert Name:</b> ${alert.alert_name}<br><br>
+                <b>Severity:</b> ${alert.severity}<br><br>
+                <b>Status:</b> ${alert.status}
+            `;
+        }
+
+        loadAlerts();
+
+    </script>
+
+</body>
+</html>

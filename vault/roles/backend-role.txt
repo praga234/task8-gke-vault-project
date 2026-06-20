@@ -1,0 +1,21 @@
+Vault Role: backend-role
+
+Service Account:
+backend-sa
+
+Namespace:
+default
+
+Policies:
+backend-policy
+
+TTL:
+24h
+
+Command Used:
+
+vault write auth/kubernetes/role/backend-role 
+bound_service_account_names=backend-sa 
+bound_service_account_namespaces=default 
+policies=backend-policy 
+ttl=24h

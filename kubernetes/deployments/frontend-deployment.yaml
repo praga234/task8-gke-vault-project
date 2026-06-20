@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: soc-frontend
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: soc-frontend
+
+  template:
+    metadata:
+      labels:
+        app: soc-frontend
+
+    spec:
+      containers:
+      - name: soc-frontend
+        image: pragnesh92/soc-alert-frontend:v2
+
+        ports:
+        - containerPort: 80
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 20
+          periodSeconds: 10

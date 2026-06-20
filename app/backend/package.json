@@ -1,0 +1,12 @@
+{
+  "name": "soc-alert-api",
+  "version": "1.0.0",
+  "description": "SOC Alert Management API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "mysql2": "^3.22.5"
+  }
+}
